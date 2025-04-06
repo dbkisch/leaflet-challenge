@@ -25,9 +25,6 @@ basemap.addTo(myMap);
 // Make a request that retrieves the earthquake geoJSON data.
 d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson").then(function (data) {
 
-  console.log(data);
-
-
   // This function returns the style data for each of the earthquakes we plot on
   // the map. Pass the magnitude and depth of the earthquake into two separate functions
   // to calculate the color and radius.
@@ -40,30 +37,35 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geoj
       radius: getRadius(feature.properties.mag) * 3
     }
   }
+
   // This function determines the color of the marker based on the depth of the earthquake.
   function getColor(depth) {
     if (depth >= 90) return "red";
-    else if (depth >= 70) return "orange";
-    else if (depth >= 50) return "lightSalmon";
+    else if (depth >= 70) return "coral";
+    else if (depth >= 50) return "orange";
     else if (depth >= 30) return "gold";
     else if (depth >= 10) return "greenYellow"
     else return "lime";
   }
+
   // This function determines the radius of the earthquake marker based on its magnitude.
   function getRadius(magnitude) {
     // return Math.sqrt(magnitude);
     return magnitude;
   }
+
   // Add a GeoJSON layer to the map once the file is loaded.
   L.geoJson(data, {
-     // Turn each feature into a circleMarker on the map.
-    pointToLayer: function (feature,latlng) {
 
+    // Turn each feature into a circleMarker on the map.
+    pointToLayer: function (feature,latlng) {
       return L.circleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]]);
     },
-  //   // Set the style for each circleMarker using our styleInfo function.
+
+    // Set the style for each circleMarker using our styleInfo function.
     style: styleInfo,
-  //   // Create a popup for each marker to display the magnitude and location of the earthquake after the marker has been created and styled
+
+    // Create a popup for each marker to display the magnitude and location of the earthquake after the marker has been created and styled
     onEachFeature: function(feature, layer) {
       layer.bindPopup(`<h3>Magnitude: ${feature.properties.mag}</h3><hr><p>Depth: ${feature.geometry.coordinates[2]}</p>`);
     }
@@ -82,16 +84,17 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geoj
     let div = L.DomUtil.create("div", "info legend");
 
     // Initialize depth intervals and colors for the legend
-    let limits = ["-10-10","10-30","30-50","50-70","70-90","90+"];
-    let colors = ["red","orange","lightSalmon","gold","greenYellow","lime"];
-    let labels = [];
-  
+    let limits = [-10,10,30,50,70,90];
+    let colors = ["lime","greenYellow","gold","orange","coral","red"];
+    // let labels = [];
+   
     // Loop through our depth intervals to generate a label with a colored square for each interval.
-    limits.forEach(function(limit, index) {
-      labels.push("<li> ${limit[index]} ${colors[index]} </li>");
-    });
-
-    div.innerHTML += "<ul>" + labels.join("") + "</ul>";
+    for (var i = 0; i < limits.length; i++) {
+      div.innerHTML +=
+          '<i style="background:' + getColor(limits[i] + 1) + '"></i> ' +
+          limits[i] + (limits[i + 1] ? '&ndash;' + limits[i + 1] + '<br>' : '+');
+    }
+  
     return div;
   };
 
