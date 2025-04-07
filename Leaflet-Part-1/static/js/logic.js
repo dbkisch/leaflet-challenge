@@ -67,7 +67,7 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geoj
 
     // Create a popup for each marker to display the magnitude and location of the earthquake after the marker has been created and styled
     onEachFeature: function(feature, layer) {
-      layer.bindPopup(`<h3>Magnitude: ${feature.properties.mag}</h3><hr><p>Depth: ${feature.geometry.coordinates[2]}</p>`);
+      layer.bindPopup(`<h3>${feature.properties.place}</h3><hr><p>Magnitude: ${feature.properties.mag}, Depth: ${feature.geometry.coordinates[2]}</p>`);
     }
   
   // OPTIONAL: Step 2
@@ -85,9 +85,7 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geoj
 
     // Initialize depth intervals and colors for the legend
     let limits = [-10,10,30,50,70,90];
-    let colors = ["lime","greenYellow","gold","orange","coral","red"];
-    // let labels = [];
-   
+      
     // Loop through our depth intervals to generate a label with a colored square for each interval.
     for (var i = 0; i < limits.length; i++) {
       div.innerHTML +=
